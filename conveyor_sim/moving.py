@@ -3,13 +3,14 @@ from dataclasses import dataclass
 @dataclass
 class Moving:
     id: int
-    seg: str           # "LOAD", "B{idx}", "L1", "L2", "U1", "U2"
+    seg: str          
     pos: float
     length: float
     speed: float
     wrap: bool = False
-    created_at: float = 0.0        # üretim zamanı
-    entered_area_at: float = 0.0   # bulunduğu banda giriş (LIFO için)
+    created_at: float = 0.0       
+    entered_area_at: float = 0.0  
+    barcode: str = ""
 
     def step(self, dt: float):
         sp = 0.0 if self.speed is None else self.speed

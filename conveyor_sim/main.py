@@ -5,24 +5,19 @@ from config import DT
 def run():
     sys = ConveyorSystem()
     sys.on_unloaded = lambda iid, at, ts: None
-
-    print("Başladı. R: DRAIN/COLLECT, P: PENÇE/ASKI, H: HANG (opsiyonel), Q: çıkış")
+    print("Başladı. R: DRAIN/COLLECT, P: PENÇE/ASKI, H: HANG, B: BARKOD, Q: çıkış")
     try:
-        # Windows'ta anlık klavye için msvcrt
         try:
             import msvcrt
             has_msvcrt = True
         except ImportError:
             has_msvcrt = False
             print("(Uyarı) msvcrt yok: tuş algılama kapalı; simülasyon akacak.")
-
         while True:
             start = time.time()
-
             ch = None
             if has_msvcrt and msvcrt.kbhit():
                 ch = msvcrt.getwch().lower()
-
             if ch == "q":
                 break
             elif ch == "r":
@@ -32,18 +27,16 @@ def run():
                 sys.pick_and_hang()
                 print("-> P: LOAD -> (L1/BELT/LOAD rastgele) taşı ve dondur")
             elif ch == "h":
-                sys._enter_hang()   # opsiyonel manuel HANG
+                sys._enter_hang()
                 print("-> Mode: HANG (askıda bekleme)")
-
+            elif ch == "b":
+                code = f"BC{sys.next_id:04d}"
+                sys.add_item_from_barcode(code, station=1)
             sys.tick()
-
-            # Her tam saniyede bir snapshot yaz
             if int(sys.t) != int(sys.t - DT):
                 print(sys.snapshot(), flush=True)
-
             elapsed = time.time() - start
             time.sleep(max(0.0, DT - elapsed))
-
     except KeyboardInterrupt:
         pass
     print("Durdu.")
