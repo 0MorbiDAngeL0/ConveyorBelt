@@ -6,7 +6,7 @@ def run():
     sys = ConveyorSystem()
     sys.on_unloaded = lambda iid, at, ts: None
 
-    print("Başladı. R: DRAIN/COLLECT toggle, H: HANG, Q: çıkış")
+    print("Başladı. R: DRAIN/COLLECT, P: PENÇE/ASKI, H: HANG (opsiyonel), Q: çıkış")
     try:
         # Windows'ta anlık klavye için msvcrt
         try:
@@ -19,7 +19,6 @@ def run():
         while True:
             start = time.time()
 
-            # --- Tuş okuma (her turda ch tanımlı) ---
             ch = None
             if has_msvcrt and msvcrt.kbhit():
                 ch = msvcrt.getwch().lower()
@@ -29,12 +28,13 @@ def run():
             elif ch == "r":
                 sys.toggle_mode()
                 print(f"-> Mode: {sys.mode}")
+            elif ch == "p":
+                sys.pick_and_hang()
+                print("-> P: LOAD -> (L1/BELT/LOAD rastgele) taşı ve dondur")
             elif ch == "h":
-                # HANG moduna gir (askıda bekletme)
-                sys._enter_hang()
+                sys._enter_hang()   # opsiyonel manuel HANG
                 print("-> Mode: HANG (askıda bekleme)")
 
-            # --- Simülasyon adımı ---
             sys.tick()
 
             # Her tam saniyede bir snapshot yaz
